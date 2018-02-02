@@ -15,10 +15,9 @@ class NeuralChunker:
         self.encoder = torch.load(encoder_file)
         self.decoder = torch.load(decoder_file)
         self.output_lang = output_lang
-        self.max_length = max_length
         
     def chunk(self, input_sent):
-        return evaluate(self.encoder, self.decoder, self.output_lang, input_sent, self.max_length)[0]
+        return evaluate(self.encoder, self.decoder, self.output_lang, input_sent, self.decoder.max_length)[0]
 
     
 class TargetLang:
@@ -112,7 +111,7 @@ def target_variable_from_sentences(lang, sentences):
     
 def initializeChunker(encoderFile, decoderFile, train_file, dev_file, max_input_length):
     output_lang, pairs, pairs_dev, max_length = initializeData(train_file, dev_file, max_input_length = max_input_length)  
-    chunker = NeuralChunker(encoderFile, decoderFile, output_lang, max_length)
+    chunker = NeuralChunker(encoderFile, decoderFile, output_lang)
     return chunker, pairs, pairs_dev
 
 

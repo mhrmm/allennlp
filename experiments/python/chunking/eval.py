@@ -177,7 +177,9 @@ def evaluateSents(encoder, decoder, output_lang, sent_pairs, max_length, num_to_
 
 def validate(encoder, decoder, output_lang, sent_pairs, max_length, num_to_eval=100):
     num_correct = 0
-    for pair in sent_pairs[:num_to_eval]:
+    for (index, pair) in enumerate(sent_pairs[:num_to_eval]):
+        if (index+1) % 500 == 0:
+            print('accuracy after {} instances: {}'.format(index+1, float(num_correct)/num_to_eval))
         try:
             output_words, attentions = evaluate(encoder, decoder, output_lang, pair[0], max_length)        
             output_sentence = ' '.join(output_words[:-1])

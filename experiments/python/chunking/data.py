@@ -11,7 +11,7 @@ EOS_token = 1
 use_cuda = torch.cuda.is_available()
     
 class NeuralChunker:
-    def __init__(self, encoder_file, decoder_file, output_lang, max_length):
+    def __init__(self, encoder_file, decoder_file, output_lang):
         self.encoder = torch.load(encoder_file)
         self.decoder = torch.load(decoder_file)
         self.output_lang = output_lang

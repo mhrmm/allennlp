@@ -51,14 +51,15 @@ def evaluate(encoder, decoder, output_lang, sentence, max_length):
 
 def compute_prob(encoder, decoder, output_lang, sentence, desired_output, max_length):
     input_variable = elmo_variable_from_sentence(sentence)
-    desired_variable = list(variableFromSentence(output_lang, desired_output).data.view(-1))
-    input_length = input_variable.size()[0]
     encoder_hidden = encoder.initHidden()
+    desired_variable = list(variableFromSentence(output_lang, desired_output).data.view(-1))
     encoder_outputs = Variable(torch.zeros(max_length, encoder.hidden_size))
     encoder_outputs = encoder_outputs.cuda() if use_cuda else encoder_outputs
+    input_length = input_variable.size()[1]
     for ei in range(input_length):
-        encoder_output, encoder_hidden = encoder(input_variable[ei],
-                                                 encoder_hidden)
+        encoder_output, encoder_hidden = encoder(
+            input_variable, ei, encoder_hidden)
+        #encoder_outputs[ei] = encoder_output[0][0]
         encoder_outputs[ei] = encoder_outputs[ei] + encoder_output[0][0]
     decoder_input = Variable(torch.LongTensor([[SOS_token]]))  # SOS
     decoder_input = decoder_input.cuda() if use_cuda else decoder_input
@@ -165,7 +166,7 @@ def evaluateSents(encoder, decoder, output_lang, sent_pairs, max_length, num_to_
         output_words, attentions = evaluate(encoder, decoder, output_lang, pair[0], max_length)        
         output_sentence = ' '.join(output_words[:-1])
         if pair[1] != output_sentence:
-            still_correct += False
+            still_correct = False
         tokens = set([tok for tok in pair[0].split() if '_' in tok])
         if len(tokens & prev_tokens) == 0:
             if still_correct:

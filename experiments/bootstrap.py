@@ -2,7 +2,7 @@ import sys
 import torch
 sys.path.append('./python')
 
-from chunking.data import initializeData
+from chunking.data import initializeData, initializeChunker
 from chunking.eval import validate
 from chunking.train import trainItersElmo, EncoderRNNElmo, AttnDecoderRNN
 
@@ -11,7 +11,8 @@ use_cuda = torch.cuda.is_available()
 def main(argv):
  
     print("*** initializing data ***")
-    output_lang, pairs, pairs_dev, max_length = initializeData('data/qbank.unlabeled.elmo.train.txt', 'data/qbank.unlabeled.elmo.dev.txt', max_input_length = 30)  
+    max_input_length = 30
+    output_lang, pairs, pairs_dev, max_length = initializeData('data/qbank.unlabeled.elmo.train.txt', 'data/qbank.unlabeled.elmo.dev.txt', max_input_length = max_input_length)  
       
     hidden_size = 1029
     if use_cuda:
@@ -24,7 +25,8 @@ def main(argv):
         'encoder.wsj.76_1.pt',
         'decoder.wsj.76_1.pt',
         'data/wsj.unlabeled.elmo.train.txt',
-        'data/wsj.unlabeled.elmo.dev.txt'
+        'data/wsj.unlabeled.elmo.dev.txt',
+        max_input_length
     )
         
     encoder1 = chunker.encoder
